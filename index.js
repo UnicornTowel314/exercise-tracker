@@ -83,6 +83,55 @@ app.post("/api/users/:id/exercises", (req, res) => {
   });
 });
 
+app.get("/api/users/:_id/logs", (req, res) => {
+  let fromParam = req.query.from;
+  let toParam = req.query.to;
+  let limitParam = req.query.limit;
+  let userId = req.params._id;
+
+  limitParam = limitParam ? parseInt(limitParam) : limitParam;
+
+  userModel.findById(userId, (err, userFound) => {
+    if (err) return console.log(err);
+
+    let queryObj = {
+      userId: userId
+    };
+
+    if (fromParam || toParam) {
+      queryObj.date = {}
+      if (fromParam) {
+        queryObj.date["$gte"] = fromParam;
+      }
+      if (toParam) {
+        queryObj.date["$lte"] = toParam;
+      }
+    }
+
+    exerciseModel.find(queryObj).limit(limitParam).exec((err, exercises) => {
+      if (err) return console.log(err);
+
+      let resObj = {
+        _id: userFound._id,
+        username: userFound.username
+      }
+
+      exercises = exercises.map((x) => {
+        return {
+          description: x.description,
+          duration: x.duration,
+          date: new Date(x.date).toDateString()
+        }
+      })
+
+      resObj.log = exercises;
+      resObj.count = exercises.length;
+
+      res.json(resObj);
+    });
+  });
+});
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
