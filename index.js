@@ -2,6 +2,14 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
+const bodyParser = require("body-parser");
+
+let mongoose;
+try{
+  mongoose = require("mongoose");
+}catch (err) {
+  console.log(err);
+}
 
 app.use(cors())
 app.use(express.static('public'))
