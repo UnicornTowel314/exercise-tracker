@@ -53,7 +53,7 @@ app.get("/api/users", (req, res) => {
   })
 });
 
-app.post("/api/users/:id/exercises", (req, res) => {
+app.post("/api/users/:_id/exercises", (req, res) => {
   let userId = req.params._id;
   exerciseObj = {
     userId: userId,
